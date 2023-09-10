@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -13,18 +15,18 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $product = (new Product())->setName('Iphone')->setPrice(100);
+        $product = (new Product())->setName('Iphone')->setPrice('100');
         $manager->persist($product);
-        $product = (new Product())->setName('Наушники')->setPrice(20);
+        $product = (new Product())->setName('Наушники')->setPrice('20');
         $manager->persist($product);
-        $product = (new Product())->setName('Чехол')->setPrice(10);
+        $product = (new Product())->setName('Чехол')->setPrice('10');
         $manager->persist($product);
 
         $manager->flush();
 
-        $coupon = (new Coupon())->setNumber('D15')->setDiscount('6')->setType(CouponTypeEnum::Percent);
+        $coupon = (new Coupon())->setNumber('D15')->setDiscount(6)->setType(CouponTypeEnum::Percent);
         $manager->persist($coupon);
-        $coupon = (new Coupon())->setNumber('P5')->setDiscount('5')->setType(CouponTypeEnum::Fixed);
+        $coupon = (new Coupon())->setNumber('P5')->setDiscount(5)->setType(CouponTypeEnum::Fixed);
         $manager->persist($coupon);
 
         $manager->flush();

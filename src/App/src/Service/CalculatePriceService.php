@@ -30,13 +30,14 @@ class CalculatePriceService implements ICalculatePriceService
     /**
      * @param string $couponCode
      * @return Coupon|null
+     * @throws \Exception
      */
     private function findCoupon(string $couponCode): ?Coupon
     {
         if ("" === $couponCode) {
             return null;
         }
-        /** @var Cupon $coupon */
+        /** @var Coupon $coupon */
         $coupon = $this->couponRepository->findOneBy(['number' => $couponCode]);
 
         if (null === $coupon) {
@@ -45,9 +46,11 @@ class CalculatePriceService implements ICalculatePriceService
 
         return $coupon;
     }
+
     /**
      * @param string $taxNumber
      * @return Tax|null
+     * @throws \Exception
      */
     private function findTax(string $taxNumber): ?Tax
     {
@@ -62,6 +65,7 @@ class CalculatePriceService implements ICalculatePriceService
 
     /**
      * @inheritDoc
+     * @throws \Exception
      */
     public function calculate(int $productId, string $taxNumber, string $couponCode): float
     {
@@ -76,14 +80,10 @@ class CalculatePriceService implements ICalculatePriceService
 
         $productPrice = $product->getPrice();
         if (null !== $coupon) {
-            switch ($coupon->getType()) {
-                case CouponTypeEnum::Fixed:
-                    $productPrice = max($productPrice - $coupon->getDiscount(), 0);
-                    break;
-                case CouponTypeEnum::Percent:
-                    $productPrice = $productPrice - $productPrice * $coupon->getDiscount() / 100;
-                    break;
-            }
+            $productPrice = match ($coupon->getType()) {
+                CouponTypeEnum::Fixed => max($productPrice - $coupon->getDiscount(), 0),
+                CouponTypeEnum::Percent => $productPrice - $productPrice * $coupon->getDiscount() / 100,
+            };
         }
 
         $tax = $this->findTax($taxNumber);

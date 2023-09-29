@@ -12,17 +12,16 @@ use Symfony\Component\Validator\Exception\InvalidArgumentException;
 
 class TaxNumberValidator extends ConstraintValidator
 {
-    private function getPattern($value)
+    private function getPattern($value): string
     {
         $countyPrefix = substr($value, 0, 2);
         
         switch ($countyPrefix) {
+            case 'GR':
             case 'DE':
                 return '/^[0-9]{9}$/';
             case 'IT':
                 return '/^[0-9]{11}$/';
-            case 'GR':
-                return '/^[0-9]{9}$/';
             case 'FR':
                 return '/^[A-Z]{2}[0-9]{9}$/';
             default:
